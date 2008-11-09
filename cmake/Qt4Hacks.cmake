@@ -1,6 +1,6 @@
 
    MACRO(QSMP_QT4_AUTOMOC)
-      QT4_GET_MOC_INC_DIRS(_moc_INCS)
+      QT4_GET_MOC_FLAGS(_moc_INCS)
 
       SET(_matching_FILES )
       FOREACH (_current_FILE ${ARGN})

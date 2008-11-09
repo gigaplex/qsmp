@@ -1,7 +1,7 @@
 project(qsmp)
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS filesystem system thread date_time)
+find_package(Boost REQUIRED COMPONENTS filesystem system thread date_time)
 
 set(TBB_ROOT E:/SCM/tbb-win32 CACHE FILEPATH "tbb root")
 set(TBB_INCLUDE_DIR ${TBB_ROOT}/include)
