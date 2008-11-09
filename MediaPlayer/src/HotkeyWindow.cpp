@@ -20,6 +20,7 @@
 #include <qsmp/HotkeyWindow.h>
 #include <qsmp/HotkeyWindow.moc>
 
+#include <qsmp/Log.h>
 #include <MMShellHook.h>
 
 QSMP_BEGIN
@@ -37,7 +38,7 @@ HotkeyWindow::HotkeyWindow()
 
 HotkeyWindow::~HotkeyWindow()
 {
-  UnregisterHotkeys();
+  DeregisterHotkeys();
 }
 
 //-----------------------------------------------------------------------------
@@ -45,20 +46,30 @@ HotkeyWindow::~HotkeyWindow()
 bool HotkeyWindow::RegisterHotkeys()
 {
   if (registered_hotkeys_)
-    UnregisterHotkeys();
+    DeregisterHotkeys();
 
   registered_hotkeys_ = SetMMShellHook(internalWinId());
+
+  if (registered_hotkeys_)
+    QSMP_LOG("Hotkey") << "Hotkey registration succeeded";
+  else
+    QSMP_LOG("Hotkey") << "Hotkey registration failed";
 
   return registered_hotkeys_;
 }
 
 //-----------------------------------------------------------------------------
 
-bool HotkeyWindow::UnregisterHotkeys()
+bool HotkeyWindow::DeregisterHotkeys()
 {
   if (registered_hotkeys_)
   {
     registered_hotkeys_ = !UnSetMMShellHook(internalWinId());
+
+    if (registered_hotkeys_)
+      QSMP_LOG("Hotkey") << "Hotkey unregistration failed";
+    else
+      QSMP_LOG("Hotkey") << "Hotkey deregistration succeeded";
 
     return !registered_hotkeys_;
   }
@@ -70,73 +81,28 @@ bool HotkeyWindow::UnregisterHotkeys()
 
 bool HotkeyWindow::winEvent(MSG* message, long* /*result*/)
 {
-  //static bool next = false;
-  //static bool previous = false;
-  //static bool playpause = false;
-  //static bool stop = false;
-
   if(message->message == WM_APPCOMMAND)
   {
-    // HWND hack to make all hex
-    std::cout << "message->message: " << (HWND)message->message << std::endl;
-    std::cout << "message->hwnd: " << (HWND)message->hwnd << std::endl;
-    std::cout << "message->lParam: " << (HWND)message->lParam << std::endl;
-    std::cout << "message->time: " << message->time << std::endl;
-    std::cout << "message->wParam: " << (HWND)message->wParam << std::endl;
-
     switch(GET_APPCOMMAND_LPARAM(message->lParam))
     {
     case APPCOMMAND_MEDIA_NEXTTRACK:
-      //if (next)
-      //{
-      //  next = false;
-      //  std::cout << "Next hotkey ignored: " << GetTickCount() << std::endl;
-      //}
-      //else
-      //{
-      //  next = true;
-        std::cout << "Next hotkey detected: " << GetTickCount() << std::endl;
-        OnNext();
-      //}
+      QSMP_LOG("Hotkey") << "Next hotkey detected: " << GetTickCount();
+      OnNext();
       return true;
+
     case APPCOMMAND_MEDIA_PREVIOUSTRACK:
-      //if (previous)
-      //{
-      //  previous = false;
-      //  std::cout << "Previous hotkey ignored: " << GetTickCount() << std::endl;
-      //}
-      //else
-      //{
-      //  previous = true;
-        std::cout << "Previous hotkey detected: " << GetTickCount() << std::endl;
-        OnPrevious();
-      //}
+      QSMP_LOG("Hotkey") << "Previous hotkey detected: " << GetTickCount();
+      OnPrevious();
       return true;
+
     case APPCOMMAND_MEDIA_STOP:
-      //if (stop)
-      //{
-      //  stop = false;
-      //  std::cout << "Stop hotkey ignored: " << GetTickCount() << std::endl;
-      //}
-      //else
-      //{
-      //  stop = true;
-        std::cout << "Stop hotkey detected: " << GetTickCount() << std::endl;
-        OnStop();
-      //}
+      QSMP_LOG("Hotkey") << "Stop hotkey detected: " << GetTickCount();
+      OnStop();
       return true;
+
     case APPCOMMAND_MEDIA_PLAY_PAUSE:
-      //if (playpause)
-      //{
-      //  playpause = false;
-      //  std::cout << "Play/Pause hotkey ignored: " << GetTickCount() << std::endl;
-      //}
-      //else
-      //{
-      //  playpause = true;
-        std::cout << "Play/Pause hotkey detected: " << GetTickCount() << std::endl;
-        OnPlayPause();
-      //}
+      QSMP_LOG("Hotkey") << "Play/Pause hotkey detected: " << GetTickCount();
+      OnPlayPause();
       return true;
     }
   }

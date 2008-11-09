@@ -39,6 +39,7 @@ file_active_(false)
   connect(&media_, SIGNAL(aboutToFinish()), this, SLOT(EnqueueNext()));
   connect(&media_, SIGNAL(currentSourceChanged(const Phonon::MediaSource &)), this, SIGNAL(OnSourceChanged()));
   connect(&media_, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(StatusChanged(Phonon::State, Phonon::State)));
+  connect(&media_, SIGNAL(tick(qint64)), this, SLOT(Tick(qint64)));
 }
 
 //-----------------------------------------------------------------------------
@@ -193,12 +194,26 @@ void Player::StatusChanged(Phonon::State newState, Phonon::State oldState)
 
 void Player::EnqueueNext()
 {
+  QSMP_LOG("Player") << "Phonon aboutToFinish signal detected";
   if (!get_next_.empty())
   {
     std::string next = get_next_().path().file_string();
     QSMP_LOG("Player") << "Getting next: " << next;
     media_.enqueue(QString::fromStdString(next));
   }
+}
+
+//-----------------------------------------------------------------------------
+
+void Player::Tick(qint64 time)
+{
+  QTime progress(0, 0);
+  QTime total(0, 0);
+
+  progress = progress.addMSecs(time);
+  total = total.addMSecs(media_.totalTime());
+
+  OnProgress(progress, total);
 }
 
 //-----------------------------------------------------------------------------

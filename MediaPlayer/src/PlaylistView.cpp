@@ -124,6 +124,7 @@ PlayerControl::PlayerControl(Player *player, PlayerHistory *history)
   connect(play_pause_, SIGNAL(clicked()), player, SLOT(PlayPause()));
   connect(stop_, SIGNAL(clicked()), player, SLOT(Stop()));
   connect(player, SIGNAL(OnStatus(PlayerState)), this, SLOT(Status(PlayerState)));
+  connect(player, SIGNAL(OnProgress(QTime, QTime)), this, SLOT(Progress(QTime, QTime)));
 
   Status(PlayerState_Invalid);
 }

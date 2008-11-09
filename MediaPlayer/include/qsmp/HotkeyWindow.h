@@ -36,7 +36,7 @@ public:
   virtual ~HotkeyWindow();
 
   bool RegisterHotkeys();
-  bool UnregisterHotkeys();
+  bool DeregisterHotkeys();
 
 protected:
   bool winEvent(MSG* message, long* result);

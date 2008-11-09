@@ -75,6 +75,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
   void EnqueueNext();
+  void Tick(qint64 time);
 private:
   boost::function<Media ()>  get_next_;
 	Phonon::MediaObject        media_;
